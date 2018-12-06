@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /*
-    Common functions that reduces repeat logic
+    Common functions that reduces repeat logic.
+    Needs to be Scriptable Object!
 */
 public class HelperFunctions : MonoBehaviour {
 
@@ -40,10 +41,25 @@ public class HelperFunctions : MonoBehaviour {
             current = init;
     }
 
-    // Common scaling animation
-    public void Scaler(ref Vector3 start, ref Vector3 end)
+    // Warp objects to the other side of the playable field
+    public void WarpObject(ref Vector3 currentPosition, float screenWidth, float screenHeight)
     {
+        Vector3 newPosition = currentPosition;
+        if (currentPosition.x >= screenWidth || currentPosition.x <= -screenWidth)
+        {
+            newPosition.x *= -1f;
+        }
+        if (currentPosition.y >= screenHeight || currentPosition.y <= -screenHeight)
+        {
+            newPosition.y *= -1f;
+        }
+        currentPosition = newPosition;
+    }
 
+    // Common scaling animation
+    public Vector3 Scaler(Vector3 start, Vector3 end)
+    {
+        return Vector3.Lerp(start, end, GameplayData.gd.dTime);
     }
 
     // Creates a singleton, not working..

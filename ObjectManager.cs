@@ -87,7 +87,10 @@ public class ObjectManager : MonoBehaviour {
         for (int i = 0; i < objs.Count; i++)
         {
             if (!objs[i].activeInHierarchy)
+            {
+                objs[i].transform.localScale = new Vector3(1f, 1f, 1f);
                 return objs[i];
+            }
         }
         return null;
     }
@@ -96,6 +99,7 @@ public class ObjectManager : MonoBehaviour {
     #region PUBLIC FUNCTIONS
     public void RemoveObject(GameObject obj)
     {
+        obj.transform.localScale = HelperFunctions.hf.Scaler(obj.transform.localScale, Vector3.zero);
         obj.SetActive(false);
     }
 

@@ -1,8 +1,9 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿//using System.Collections;
+//using System.Collections.Generic;
 using UnityEngine;
-using System;
-using System.Runtime.Serialization.Formatters.Binary;
+using UnityEngine.UI;
+//using System;
+//using System.Runtime.Serialization.Formatters.Binary;
 
 /*
     For storing critical information such as gameplay information.
@@ -13,6 +14,8 @@ public class GameplayData : MonoBehaviour {
 
     [Header("Gameplay Stats")]
     public float health;
+    public float maxHealth;
+    public GameObject healthBar;
     public uint foodCollected;
     public int bodyCount;
     public float moveSpeed;
@@ -23,8 +26,9 @@ public class GameplayData : MonoBehaviour {
     public float dTime;
     public bool isBuildMode;
     public float slowmoFuel;
-    
+
     // Awake happens before Start()
+    private Slider slider;
     void Awake ()
     {
         // Creates a singleton
@@ -39,10 +43,22 @@ public class GameplayData : MonoBehaviour {
         }
 
         gameSpeed = 1f;
+        health = maxHealth;
+        slider = healthBar.GetComponent<Slider>();
 	}
-
-    private void Update()
+    
+    void Update()
     {
+        // Game speed used for all objects that needs to be affected by it
         dTime = Time.deltaTime * gameSpeed;
+    }
+
+    public void UpdateHealthBar(ref float prevHealth)
+    {
+        if (prevHealth != health)
+        {
+            float result = health / maxHealth;
+            slider.value = result;
+        }
     }
 }

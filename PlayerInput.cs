@@ -8,15 +8,12 @@ using UnityEngine.UI;
 */
 public class PlayerInput : MonoBehaviour {
     
-    public GameObject mainCamera;
-    Camera cam;
     public GameObject sliderBuildMode;
     Slider slider;
     Animator anim;
 
     void Awake()
     {
-        cam = mainCamera.GetComponent<Camera>();
         slider = sliderBuildMode.GetComponent<Slider>();
         anim = GetComponent<Animator>();
     }
@@ -80,21 +77,12 @@ public class PlayerInput : MonoBehaviour {
         }
     }
 
-    private Vector3 mousePosition;
-    Vector3 GetMousePosition()
-    {
-        // Calculate cursor screen position to world position
-        mousePosition = cam.ScreenToWorldPoint(new Vector3(Input.mousePosition.x, Input.mousePosition.y, cam.nearClipPlane));
-        mousePosition.z = 0f;
-
-        return mousePosition;
-    }
-
+    public GameObject cursor;
     float angle;
     void Rotation()
     {
         // Get angle between player and cursor positions
-        Vector3 vectorToTarget = GetMousePosition() - transform.position;
+        Vector3 vectorToTarget = cursor.transform.position - transform.position;
         angle = Mathf.Atan2(vectorToTarget.y, vectorToTarget.x) * Mathf.Rad2Deg - 90;
 
         // Smooth transition of rotation to cursor
@@ -122,6 +110,7 @@ public class PlayerInput : MonoBehaviour {
     {
         GUI.Label(new Rect(10, 10, 200, 25), "Body: " + GameplayData.gd.bodyCount);
         GUI.Label(new Rect(10, 35, 200, 25), "Food: " + GameplayData.gd.foodCollected);
+        GUI.Label(new Rect(10, 60, 200, 25), "HP: " + GameplayData.gd.health);
         //GUI.Label(new Rect(10, 35, 200, 25), angle.ToString());
     }
 }
