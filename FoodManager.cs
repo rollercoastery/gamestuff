@@ -39,7 +39,6 @@ public class FoodManager : MonoBehaviour {
             if (Vector3.Distance(playerPos, randPos) >= 0.5f && !IsAnyFoodCollide(randPos, 0.4f))
             {
                 food.transform.position = randPos;
-                food.SetActive(true);
                 randTime = Random.Range(10f, 30f);
             }
         }

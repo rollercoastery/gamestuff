@@ -57,9 +57,9 @@ public class HelperFunctions : MonoBehaviour {
     }
 
     // Common scaling animation
-    public Vector3 Scaler(Vector3 start, Vector3 end)
+    public Vector3 Scaler(Vector3 start, Vector3 end, float time)
     {
-        return Vector3.Lerp(start, end, GameplayData.gd.dTime);
+        return Vector3.Lerp(start, end, GameplayData.gd.dTime * time);
     }
 
     // Creates a singleton, not working..

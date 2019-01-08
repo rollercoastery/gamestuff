@@ -102,7 +102,7 @@ public class PlayerInput : MonoBehaviour {
         {
             GameplayData.gd.foodCollected -= 1;
             GameplayData.gd.bodyCount += 1;
-            ObjectManager.om.GetBody().SetActive(true);
+            ObjectManager.om.GetBody();
         }
     }
 

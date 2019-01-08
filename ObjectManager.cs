@@ -44,16 +44,25 @@ public class ObjectManager : MonoBehaviour {
     public GameObject           enemyObject;
     public GameObject           enemyParent;
     public int                  enemyAmount;
+
+    [Header("Spawner")]
+    public List<GameObject>     spawnerObjects;
+    public GameObject           spawnerObject;
+    public GameObject           spawnerParent;
+    public int                  spawnerAmount;
     #endregion
 
     void Start()
     {
-        CreateObjects(ref foodObjects, ref foodObject, ref foodParent, ref foodAmount);
-        CreateObjects(ref enemyObjects, ref enemyObject, ref enemyParent, ref enemyAmount);
+        //CreateObjects(ref foodObjects, ref foodObject, ref foodParent, ref foodAmount);
+        //CreateObjects(ref enemyObjects, ref enemyObject, ref enemyParent, ref enemyAmount);
+
+        // Don't use this anymore after changing the bodies to MoveTowards instead
         CreateBodies(ref bodyObjects, ref bodyObject, ref bodyParent, ref bodyAmount);
     }
 
     #region HELPER FUNCTIONS
+    // outdated
     void CreateObjects(ref List<GameObject> objs, ref GameObject obj, ref GameObject parent, ref int amt)
     {
         objs = new List<GameObject>();
@@ -67,6 +76,39 @@ public class ObjectManager : MonoBehaviour {
         }
     }
 
+    void CreateObject(ref List<GameObject> list, ref GameObject prefab, ref GameObject parent)
+    {
+        GameObject go = (GameObject)Instantiate(prefab);
+        go.transform.parent = parent.transform;
+
+        // Check prefab tag to set the correct default values
+        switch (prefab.tag)
+        {
+            case "Enemy":
+                go.SetActive(false);
+                break;
+
+            case "Food":
+                go.SetActive(false);
+                break;
+                
+            case "Body":
+                go.GetComponent<CircleCollider2D>().enabled = false;
+                go.GetComponent<Rigidbody2D>().Sleep();
+                go.GetComponent<SpriteRenderer>().enabled = false;
+                break;
+
+            case "Spawner":
+                break;
+
+            default:
+                return;
+        }
+        
+        list.Add(go);
+    }
+
+    // outdated
     void CreateBodies(ref List<GameObject> objs, ref GameObject obj, ref GameObject parent, ref int amt)
     {
         objs = new List<GameObject>();
@@ -82,16 +124,52 @@ public class ObjectManager : MonoBehaviour {
         }
     }
 
-    GameObject ActivateObject(ref List<GameObject> objs)
+    GameObject ActivateObject(ref List<GameObject> list, ref GameObject prefab, ref GameObject parent)
     {
-        for (int i = 0; i < objs.Count; i++)
+        // If there are no objects in the list, create it
+        if (list.Count <= 0)
+            CreateObject(ref list, ref prefab, ref parent);
+
+        GameObject go;
+        for (int i = 0; i < list.Count; i++)
         {
-            if (!objs[i].activeInHierarchy)
+            go = list[i];
+
+            switch (go.tag)
             {
-                objs[i].transform.localScale = new Vector3(1f, 1f, 1f);
-                return objs[i];
+                case "Enemy":
+                    if (go.activeSelf) continue;
+
+                    go.transform.localScale = new Vector3(1f, 1f, 1f);
+                    go.SetActive(true);
+                    break;
+
+                case "Food":
+                    if (go.activeSelf) continue;
+
+                    go.transform.localScale = new Vector3(1f, 1f, 1f);
+                    go.SetActive(true);
+                    break;
+
+                case "Body":
+                    if (go.GetComponent<SpriteRenderer>().enabled) continue;
+                    
+                    go.GetComponent<CircleCollider2D>().enabled = true;
+                    go.GetComponent<Rigidbody2D>().WakeUp();
+                    go.GetComponent<SpriteRenderer>().enabled = true;
+                    go.SetActive(true);
+                    break;
+
+                case "Spawner":
+                    break;
+
+                default:
+                    return null;
             }
+
+            return go;
         }
+
         return null;
     }
     #endregion
@@ -99,36 +177,23 @@ public class ObjectManager : MonoBehaviour {
     #region PUBLIC FUNCTIONS
     public void RemoveObject(GameObject obj)
     {
-        obj.transform.localScale = HelperFunctions.hf.Scaler(obj.transform.localScale, Vector3.zero);
+        StopCoroutine("DeathAnimation");
         obj.SetActive(false);
     }
-
+    
     public GameObject GetFood()
     {
-        return ActivateObject(ref foodObjects);
+        return ActivateObject(ref foodObjects, ref foodObject, ref foodParent);
     }
 
     public GameObject GetBody()
     {
-        GameObject go = null;
-        for (int i = 0; i < bodyAmount; i++)
-        {
-            go = bodyObjects[i];
-            if (go.GetComponent<SpriteRenderer>().enabled == false)
-            {
-                go.GetComponent<CircleCollider2D>().enabled = true;
-                go.GetComponent<Rigidbody2D>().WakeUp();
-                go.GetComponent<SpriteRenderer>().enabled = true;
-                break;
-            }
-        }
-
-        return go;
+        return ActivateObject(ref bodyObjects, ref bodyObject, ref bodyParent);
     }
 
     public GameObject GetEnemy()
     {
-        return ActivateObject(ref enemyObjects);
+        return ActivateObject(ref enemyObjects, ref enemyObject, ref enemyParent);
     }
     #endregion
 }
