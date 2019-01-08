@@ -1,3 +1,5 @@
 # What is this about?
-This is a personal learning experience that I am aiming to complete using Unity Engine.
-The basic idea of the game is a snake character moving in 3D space, being able to build defensive structures on each body part and trying to kill all enemies on the screen.
+This is a personal project that is created to learn the game dev process as a solo contributer using Unity Engine. The goal is to complete the game with a stretch goal of possibly publishing it as an unlisted app on the Google Play store.
+
+# What kind of game are you making?
+You play as a snake whose main purpose is to kill all enemies on the screen by building offensive/defensive structures on its body parts.
