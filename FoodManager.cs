@@ -47,11 +47,11 @@ public class FoodManager : MonoBehaviour {
     bool IsAnyFoodCollide(Vector3 nextPos, float dist)
     {
         Vector3 currentPos;
-        for (int i = 0; i < ObjectManager.om.foodAmount; ++i)
+        for (int i = 0; i < ObjectManager.om.foodList.Count; ++i)
         {
-            if (!ObjectManager.om.foodObjects[i].activeInHierarchy)
+            if (!ObjectManager.om.foodList[i].activeInHierarchy)
                 continue;
-                currentPos = ObjectManager.om.foodObjects[i].transform.position;
+                currentPos = ObjectManager.om.foodList[i].transform.position;
                 if (Vector3.Distance(currentPos, nextPos) >= dist)
                     return false;
                 else

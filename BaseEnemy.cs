@@ -6,7 +6,6 @@ public class BaseEnemy : MonoBehaviour {
 
     [Header("Basic")]
 	public uint health;
-    public GameObject target;   // Target to seek
 
     [Header("Movement")]
     public float spawnedTimer;          // Set duration after spawning to count down from
@@ -25,7 +24,7 @@ public class BaseEnemy : MonoBehaviour {
 
     float randRotationTimer;
     float randRotationMaxTimer;
-    Quaternion randomRotation;
+    Quaternion randRotation;
 
     MovementType currentMovementType;
     float currentSpawnedTimer;
@@ -33,12 +32,15 @@ public class BaseEnemy : MonoBehaviour {
 
     void OnEnable()
     {
+        transform.localScale = new Vector3(1f, 1f, 1f);
+
         // For Random movement type
         randRotationMaxTimer = Random.Range(0f, 0.5f);
         randRotationTimer = 0f;
-        randomRotation = Random.rotation;
+        randRotation = Random.rotation;
 
         currentMovementType = MovementType.Straight;
+        spawnedTimer = 0f;
         isCollided = false;
     }
     
@@ -58,7 +60,7 @@ public class BaseEnemy : MonoBehaviour {
             case MovementType.Seeking:
                 WarpObject();
                 transform.rotation = Quaternion.Lerp(transform.rotation, 
-                                                     Quaternion.LookRotation(Vector3.forward, target.transform.position - transform.position),
+                                                     Quaternion.LookRotation(Vector3.forward, ObjectManager.om.head.transform.position - transform.position),
                                                      p_turnSpeed);
                 MoveStraight();
                 break;
@@ -71,11 +73,11 @@ public class BaseEnemy : MonoBehaviour {
                 if (randRotationTimer <= 0f)
                 {
                     randRotationMaxTimer = Random.Range(0f, 3f);
-                    randomRotation = Random.rotation;
+                    randRotation = Random.rotation;
                 }
 
                 // Rotate towards random direction
-                Quaternion newRotation = Quaternion.Lerp(transform.rotation, randomRotation, p_turnSpeed);
+                Quaternion newRotation = Quaternion.Lerp(transform.rotation, randRotation, p_turnSpeed);
                 newRotation.x = newRotation.y = 0f;
                 transform.rotation = newRotation;
 

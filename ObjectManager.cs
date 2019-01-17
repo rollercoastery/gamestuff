@@ -23,73 +23,57 @@ public class ObjectManager : MonoBehaviour {
         {
             Destroy(gameObject);
         }
+
+        cam = GameObject.FindWithTag("MainCamera").GetComponent<Camera>();
+        head = GameObject.FindWithTag("Player");
         //HelperFunctions.hf.MakeSingleton(gameObject);
     }
 
+    [Header("Global Objects")]
+    public Camera cam;
+    public GameObject head;
+
     #region OBJECT VARIABLES
     [Header("Food")]
-    public List<GameObject>     foodObjects;
-    public GameObject           foodObject;
-    public GameObject           foodParent;
-    public int                  foodAmount;
+    public List<GameObject>     foodList;
+    public GameObject           foodPrefab;
+    public GameObject           foodContainer;
 
     [Header("Body")]
-    public List<GameObject>     bodyObjects;
-    public GameObject           bodyObject;
-    public GameObject           bodyParent;
+    public List<GameObject>     bodyList;
+    public GameObject           bodyPrefab;
+    public GameObject           bodyContainer;
     public int                  bodyAmount;
 
     [Header("Enemy")]
-    public List<GameObject>     enemyObjects;
-    public GameObject           enemyObject;
-    public GameObject           enemyParent;
-    public int                  enemyAmount;
+    public List<GameObject>     enemyList;
+    public GameObject           enemyPrefab;
+    public GameObject           enemyContainer;
 
     [Header("Spawner")]
-    public List<GameObject>     spawnerObjects;
-    public GameObject           spawnerObject;
-    public GameObject           spawnerParent;
-    public int                  spawnerAmount;
+    public List<GameObject>     spawnerList;
+    public GameObject           spawnerPrefab;
+    public GameObject           spawnerContainer;
     #endregion
 
     void Start()
     {
-        //CreateObjects(ref foodObjects, ref foodObject, ref foodParent, ref foodAmount);
-        //CreateObjects(ref enemyObjects, ref enemyObject, ref enemyParent, ref enemyAmount);
-
-        // Don't use this anymore after changing the bodies to MoveTowards instead
-        CreateBodies(ref bodyObjects, ref bodyObject, ref bodyParent, ref bodyAmount);
+        for (int i = 0; i < bodyAmount; i++)
+            CreateObject(ref bodyList, ref bodyPrefab, ref bodyContainer);
     }
 
     #region HELPER FUNCTIONS
-    // outdated
-    void CreateObjects(ref List<GameObject> objs, ref GameObject obj, ref GameObject parent, ref int amt)
-    {
-        objs = new List<GameObject>();
-        GameObject go;
-        for (int i = 0; i < amt; i++)
-        {
-            go = (GameObject)Instantiate(obj);
-            go.transform.parent = parent.transform;
-            go.SetActive(false);
-            objs.Add(go);
-        }
-    }
-
-    void CreateObject(ref List<GameObject> list, ref GameObject prefab, ref GameObject parent)
+    GameObject CreateObject(ref List<GameObject> list, ref GameObject prefab, ref GameObject container)
     {
         GameObject go = (GameObject)Instantiate(prefab);
-        go.transform.parent = parent.transform;
+        go.transform.parent = container.transform;
 
         // Check prefab tag to set the correct default values
         switch (prefab.tag)
         {
             case "Enemy":
-                go.SetActive(false);
-                break;
-
             case "Food":
-                go.SetActive(false);
+                go.SetActive(true);
                 break;
                 
             case "Body":
@@ -102,26 +86,11 @@ public class ObjectManager : MonoBehaviour {
                 break;
 
             default:
-                return;
+                return null;
         }
         
         list.Add(go);
-    }
-
-    // outdated
-    void CreateBodies(ref List<GameObject> objs, ref GameObject obj, ref GameObject parent, ref int amt)
-    {
-        objs = new List<GameObject>();
-        GameObject go;
-        for (int i = 0; i < amt; i++)
-        {
-            go = (GameObject)Instantiate(obj);
-            go.transform.parent = parent.transform;
-            go.GetComponent<CircleCollider2D>().enabled = false;
-            go.GetComponent<Rigidbody2D>().Sleep();
-            go.GetComponent<SpriteRenderer>().enabled = false;
-            objs.Add(go);
-        }
+        return go;
     }
 
     GameObject ActivateObject(ref List<GameObject> list, ref GameObject prefab, ref GameObject parent)
@@ -130,48 +99,46 @@ public class ObjectManager : MonoBehaviour {
         if (list.Count <= 0)
             CreateObject(ref list, ref prefab, ref parent);
 
+        bool isAllActive = false;
         GameObject go;
-        for (int i = 0; i < list.Count; i++)
+        for (int i = 0; i < list.Count; ++i)
         {
             go = list[i];
 
+            // Find an inactive clone to activate
             switch (go.tag)
             {
                 case "Enemy":
-                    if (go.activeSelf) continue;
-
-                    go.transform.localScale = new Vector3(1f, 1f, 1f);
-                    go.SetActive(true);
-                    break;
-
                 case "Food":
-                    if (go.activeSelf) continue;
-
-                    go.transform.localScale = new Vector3(1f, 1f, 1f);
-                    go.SetActive(true);
+                    if (go.activeSelf)
+                        isAllActive = true;
+                    else
+                    {
+                        isAllActive = false;
+                        go.SetActive(true);
+                    }
                     break;
 
                 case "Body":
-                    if (go.GetComponent<SpriteRenderer>().enabled) continue;
-                    
-                    go.GetComponent<CircleCollider2D>().enabled = true;
-                    go.GetComponent<Rigidbody2D>().WakeUp();
-                    go.GetComponent<SpriteRenderer>().enabled = true;
-                    go.SetActive(true);
+                    if (go.GetComponent<SpriteRenderer>().enabled)
+                        isAllActive = true;
+                    else
+                    {
+                        isAllActive = false;
+                        go.GetComponent<CircleCollider2D>().enabled = true;
+                        go.GetComponent<Rigidbody2D>().WakeUp();
+                        go.GetComponent<SpriteRenderer>().enabled = true;
+                    }
                     break;
-
-                case "Spawner":
-                    break;
-
-                default:
-                    return null;
             }
 
-            return go;
+            if (!isAllActive)
+                return go;
         }
 
-        return null;
+        return CreateObject(ref list, ref prefab, ref parent);
     }
+    
     #endregion
 
     #region PUBLIC FUNCTIONS
@@ -183,17 +150,17 @@ public class ObjectManager : MonoBehaviour {
     
     public GameObject GetFood()
     {
-        return ActivateObject(ref foodObjects, ref foodObject, ref foodParent);
+        return ActivateObject(ref foodList, ref foodPrefab, ref foodContainer);
     }
 
     public GameObject GetBody()
     {
-        return ActivateObject(ref bodyObjects, ref bodyObject, ref bodyParent);
+        return ActivateObject(ref bodyList, ref bodyPrefab, ref bodyContainer);
     }
 
     public GameObject GetEnemy()
     {
-        return ActivateObject(ref enemyObjects, ref enemyObject, ref enemyParent);
+        return ActivateObject(ref enemyList, ref enemyPrefab, ref enemyContainer);
     }
     #endregion
 }

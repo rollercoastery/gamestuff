@@ -24,6 +24,8 @@ public class BaseFood : MonoBehaviour {
 
     void OnEnable ()
     {
+        transform.localScale = new Vector3(1f, 1f, 1f);
+
         // Reset everything
         //defaultScale = transform.localScale = new Vector3(1f, 1f, 1f);
         textMesh = transform.GetChild(0).GetComponent<TextMesh>();

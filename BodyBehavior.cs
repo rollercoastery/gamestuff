@@ -23,7 +23,7 @@ public class BodyBehavior : MonoBehaviour {
         Transform followObj;
         for (int i = 0; i < ObjectManager.om.bodyAmount; i++)
         {
-            go = ObjectManager.om.bodyObjects[i];
+            go = ObjectManager.om.bodyList[i];
             
             if (i == 0)
             {
@@ -33,7 +33,7 @@ public class BodyBehavior : MonoBehaviour {
             else
             {
                 // ObjectManager -> Body (i-1) -> Body.Spawner (0)
-                followObj = ObjectManager.om.bodyObjects[i - 1].transform.GetChild(0).transform;
+                followObj = ObjectManager.om.bodyList[i - 1].transform.GetChild(0).transform;
             }
             go.transform.position = followObj.position;
             go.transform.rotation = Quaternion.Lerp(go.transform.rotation, followObj.rotation, GameplayData.gd.dTime);

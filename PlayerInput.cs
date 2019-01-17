@@ -71,10 +71,10 @@ public class PlayerInput : MonoBehaviour {
         if (GameplayData.gd.foodCollected >= 1)
             Expand();
 
-        if (Input.GetKeyUp(KeyCode.N))
+        /*if (Input.GetKeyUp(KeyCode.N))
         {
-            ObjectManager.om.RemoveObject(ObjectManager.om.bodyObjects[GameplayData.gd.bodyCount-1].gameObject);
-        }
+            ObjectManager.om.RemoveObject(ObjectManager.om.bodyList[GameplayData.gd.bodyCount-1].gameObject);
+        }*/
     }
 
     public GameObject cursor;
