@@ -7,6 +7,8 @@ using UnityEngine;
 */
 public class BaseFood : MonoBehaviour {
 
+    public GameplayData gd;
+
     public enum FoodType
     {
         Default,
@@ -50,7 +52,7 @@ public class BaseFood : MonoBehaviour {
     {
         if (collision.gameObject.tag == "Player")
         {
-            GameplayData.gd.foodCollected += 1;
+            gd.foodCollected += 1;
             ObjectManager.om.RemoveObject(this.gameObject);
         }
     }

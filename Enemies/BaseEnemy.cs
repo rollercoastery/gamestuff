@@ -4,6 +4,10 @@ using UnityEngine;
 
 public class BaseEnemy : MonoBehaviour {
 
+    public GameplayData gd;
+
+    public EnemyStat es;
+
     [Header("Basic")]
 	public uint health;
 
@@ -46,8 +50,8 @@ public class BaseEnemy : MonoBehaviour {
     
     void Update()
     {
-        float p_turnSpeed = turnSpeed * GameplayData.gd.dTime;
-
+        float p_turnSpeed = turnSpeed * Time.deltaTime * gd.gameSpeed;
+        
         if (StartSpawnedTimer(spawnedTimer))
             currentMovementType = movementType;
 
@@ -109,8 +113,8 @@ public class BaseEnemy : MonoBehaviour {
 
     private void MoveStraight()
     {
-        //transform.position = Vector3.MoveTowards(transform.position, target.transform.position, moveSpeed * GameplayData.gd.dTime);
-        transform.position += transform.up * GameplayData.gd.dTime * moveSpeed;
+        //transform.position = Vector3.MoveTowards(transform.position, target.transform.position, moveSpeed * Time.deltaTime * gd.gameSpeed;);
+        transform.position += transform.up * Time.deltaTime * gd.gameSpeed * moveSpeed;
     }
 
     // Warp object to opposite screen
@@ -132,9 +136,9 @@ public class BaseEnemy : MonoBehaviour {
         if (collision.gameObject.tag == "Player")
         {
             // Insert logic for damaging the player
-            float prevHealth = GameplayData.gd.health;
-            GameplayData.gd.health -= 1f;
-            GameplayData.gd.UpdateHealthBar(ref prevHealth);
+            float prevHealth = gd.currentHealth;
+            gd.currentHealth -= 1f;
+            //gd.UpdateHealthBar(ref prevHealth);
             isCollided = true;
         }
     }

@@ -8,6 +8,8 @@ using UnityEngine;
 */
 public class HelperFunctions : MonoBehaviour {
 
+    public GameplayData gd;
+    
     public static HelperFunctions hf;
 
     void Awake()
@@ -25,18 +27,24 @@ public class HelperFunctions : MonoBehaviour {
     }
 
     // Common count up timer
-    public void Timer(ref float current, float end)
+    public bool Timer(ref float current, float end)
     {
         if (current < end)
-            current += GameplayData.gd.dTime;
+        {
+            current += Time.deltaTime * gd.gameSpeed;
+            return false;
+        }
         else
+        {
             current = 0f;
+            return true;
+        }
     }
     // Common count down timer
     public void TimerDown(ref float current, float init)
     {
         if (current > 0f)
-            current -= GameplayData.gd.dTime;
+            current -= Time.deltaTime * gd.gameSpeed;
         else
             current = init;
     }
@@ -59,7 +67,7 @@ public class HelperFunctions : MonoBehaviour {
     // Common scaling animation
     public Vector3 Scaler(Vector3 start, Vector3 end, float time)
     {
-        return Vector3.Lerp(start, end, GameplayData.gd.dTime * time);
+        return Vector3.Lerp(start, end, Time.deltaTime * gd.gameSpeed * time);
     }
 
     // Creates a singleton, not working..

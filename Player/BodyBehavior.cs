@@ -4,15 +4,15 @@ using UnityEngine;
 
 public class BodyBehavior : MonoBehaviour {
 
+    public GameplayData gd;
+
     public GameObject front;
 
-    GameObject head;
-    //int bodyCount;
- 
+    GameObject head; 
 
     void Start ()
     {
-        //bodyCount = GameplayData.gd.bodyCount;
+        //bodyCount = gd.bodyCount;
         head = ObjectManager.om.transform.GetChild(0).gameObject;
 	}
 
@@ -36,7 +36,8 @@ public class BodyBehavior : MonoBehaviour {
                 followObj = ObjectManager.om.bodyList[i - 1].transform.GetChild(0).transform;
             }
             go.transform.position = followObj.position;
-            go.transform.rotation = Quaternion.Lerp(go.transform.rotation, followObj.rotation, GameplayData.gd.dTime);
+            go.transform.rotation = Quaternion.Lerp(go.transform.rotation, followObj.rotation, Time.deltaTime * gd.gameSpeed);
         }
     }
+        
 }

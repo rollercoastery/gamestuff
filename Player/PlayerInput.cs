@@ -7,13 +7,18 @@ using UnityEngine.UI;
     Manages all player gameplay controls.
 */
 public class PlayerInput : MonoBehaviour {
-    
+
+    public GameplayData gd;
+
     public GameObject sliderBuildMode;
     Slider slider;
     Animator anim;
 
+    GameObject cursor;
+
     void Awake()
     {
+        cursor = transform.parent.Find("Cursor").gameObject;
         slider = sliderBuildMode.GetComponent<Slider>();
         anim = GetComponent<Animator>();
     }
@@ -21,7 +26,7 @@ public class PlayerInput : MonoBehaviour {
     void Update()
     {
         BuildMode();
-        if (GameplayData.gd.isBuildMode)
+        if (gd.isBuildMode)
             anim.speed = 0.4f;
         else
             anim.speed = 0.8f;
@@ -33,23 +38,23 @@ public class PlayerInput : MonoBehaviour {
         // Slow motion when pressing spacebar, this goes into building mode
         if (Input.GetKeyUp(KeyCode.Space))
         {
-            GameplayData.gd.isBuildMode = !GameplayData.gd.isBuildMode;
+            gd.isBuildMode = !gd.isBuildMode;
         }
 
         if (slider.value <= 0f)
         {
-            GameplayData.gd.isBuildMode = false;
+            gd.isBuildMode = false;
         }
 
-        if (GameplayData.gd.isBuildMode)
+        if (gd.isBuildMode)
         {
-            GameplayData.gd.gameSpeed = 0.2f;
+            gd.gameSpeed = 0.2f;
             juiceDelayTime = 0f;
             slider.value -= Time.deltaTime * 0.2f;
         }
         else
         {
-            GameplayData.gd.gameSpeed = 1f;
+            gd.gameSpeed = 1f;
 
             if (slider.value < 1f && juiceDelayTime < 3f)
             {
@@ -68,16 +73,15 @@ public class PlayerInput : MonoBehaviour {
         Rotation();
         Move();
 
-        if (GameplayData.gd.foodCollected >= 1)
+        if (gd.foodCollected >= 1)
             Expand();
 
         /*if (Input.GetKeyUp(KeyCode.N))
         {
-            ObjectManager.om.RemoveObject(ObjectManager.om.bodyList[GameplayData.gd.bodyCount-1].gameObject);
+            ObjectManager.om.RemoveObject(ObjectManager.om.bodyList[gd.bodyCount-1].gameObject);
         }*/
     }
 
-    public GameObject cursor;
     float angle;
     void Rotation()
     {
@@ -87,12 +91,12 @@ public class PlayerInput : MonoBehaviour {
 
         // Smooth transition of rotation to cursor
         Quaternion q = Quaternion.AngleAxis(angle, Vector3.forward);
-        transform.rotation = Quaternion.Slerp(transform.rotation, q, GameplayData.gd.dTime * GameplayData.gd.turnSpeed);
+        transform.rotation = Quaternion.Slerp(transform.rotation, q, Time.deltaTime * gd.gameSpeed * gd.turnSpeed);
     }
 
     void Move()
     {
-        transform.Translate(Vector3.up * GameplayData.gd.moveSpeed * GameplayData.gd.dTime);
+        transform.Translate(Vector3.up * gd.moveSpeed * Time.deltaTime * gd.gameSpeed);
     }
     #endregion
 
@@ -100,17 +104,17 @@ public class PlayerInput : MonoBehaviour {
     {
         if (Input.GetKeyUp(KeyCode.B))
         {
-            GameplayData.gd.foodCollected -= 1;
-            GameplayData.gd.bodyCount += 1;
+            gd.foodCollected -= 1;
+            gd.bodyCount += 1;
             ObjectManager.om.GetBody();
         }
     }
 
     private void OnGUI()
     {
-        GUI.Label(new Rect(10, 10, 200, 25), "Body: " + GameplayData.gd.bodyCount);
-        GUI.Label(new Rect(10, 35, 200, 25), "Food: " + GameplayData.gd.foodCollected);
-        GUI.Label(new Rect(10, 60, 200, 25), "HP: " + GameplayData.gd.health);
+        GUI.Label(new Rect(10, 10, 200, 25), "Body: " + gd.bodyCount);
+        GUI.Label(new Rect(10, 35, 200, 25), "Food: " + gd.foodCollected);
+        GUI.Label(new Rect(10, 60, 200, 25), "HP: " + gd.currentHealth);
         //GUI.Label(new Rect(10, 35, 200, 25), angle.ToString());
     }
 }

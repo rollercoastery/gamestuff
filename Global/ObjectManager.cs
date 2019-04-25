@@ -30,6 +30,7 @@ public class ObjectManager : MonoBehaviour {
     }
 
     [Header("Global Objects")]
+    public GameplayData gd;
     public Camera cam;
     public GameObject head;
 
@@ -97,7 +98,7 @@ public class ObjectManager : MonoBehaviour {
     {
         // If there are no objects in the list, create it
         if (list.Count <= 0)
-            CreateObject(ref list, ref prefab, ref parent);
+            return CreateObject(ref list, ref prefab, ref parent);
 
         bool isAllActive = false;
         GameObject go;
@@ -136,6 +137,7 @@ public class ObjectManager : MonoBehaviour {
                 return go;
         }
 
+        // If the list is full, create a new object
         return CreateObject(ref list, ref prefab, ref parent);
     }
     
