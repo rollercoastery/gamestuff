@@ -160,9 +160,11 @@ public class ObjectManager : MonoBehaviour {
         return ActivateObject(ref bodyList, ref bodyPrefab, ref bodyContainer);
     }
 
-    public GameObject GetEnemy()
+    public GameObject GetEnemy(Vector3 position)
     {
-        return ActivateObject(ref enemyList, ref enemyPrefab, ref enemyContainer);
+        GameObject obj = ActivateObject(ref enemyList, ref enemyPrefab, ref enemyContainer);
+        obj.transform.position = position;
+        return obj;
     }
     #endregion
 }

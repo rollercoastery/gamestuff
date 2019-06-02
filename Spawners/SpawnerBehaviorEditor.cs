@@ -44,7 +44,7 @@ public class SpawnerBehaviorEditor : Editor {
             sb.spawnTimer = EditorGUILayout.FloatField(sb.spawnTimer);
             GUILayout.EndHorizontal();
         }
-        else if (sb.spawnType == SpawnerBehavior.SpawnType.RandomDefined)
+        else if (sb.spawnType == SpawnerBehavior.SpawnType.RandomRange)
         {
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("From Spawn Timer", GUILayout.Width(205));

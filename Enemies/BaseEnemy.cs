@@ -13,9 +13,11 @@ public class BaseEnemy : MonoBehaviour {
 
     [Header("Movement")]
     public float spawnedTimer;          // Set duration after spawning to count down from
+    float currentSpawnedTimer;          // The current timer of the period after spawning
     public float moveSpeed;
     public float turnSpeed;
     public MovementType movementType;   // Movement type that will eventually be set after spawning period
+    MovementType currentMovementType;   // The movement type that will be set to the enemy
 
     public enum MovementType
     {
@@ -26,12 +28,12 @@ public class BaseEnemy : MonoBehaviour {
         Teleport        // Teleports towards the target in steps
     }
 
-    float randRotationTimer;
-    float randRotationMaxTimer;
-    Quaternion randRotation;
+    float randRotationTimer;        // Current random rotation timer for the Random movement type
+    float randRotationMaxTimer;     // Max random rotation timer for the Random movement type
+    Quaternion randRotation;        // New random rotation
 
-    MovementType currentMovementType;
-    float currentSpawnedTimer;
+    
+    
     bool isCollided;    // For dying animation
 
     void OnEnable()
@@ -44,16 +46,24 @@ public class BaseEnemy : MonoBehaviour {
         randRotation = Random.rotation;
 
         currentMovementType = MovementType.Straight;
-        spawnedTimer = 0f;
+        currentSpawnedTimer = 0f;
         isCollided = false;
     }
     
     void Update()
     {
         float p_turnSpeed = turnSpeed * Time.deltaTime * gd.gameSpeed;
-        
-        if (StartSpawnedTimer(spawnedTimer))
+
+        if (!HelperFunctions.hf.Timer(ref currentSpawnedTimer, spawnedTimer))
+        {
+            currentMovementType = MovementType.Straight;
+            GetComponent<CircleCollider2D>().enabled = false;
+        }
+        else
+        {
             currentMovementType = movementType;
+            GetComponent<CircleCollider2D>().enabled = true;
+        }
 
         switch (currentMovementType)
         {

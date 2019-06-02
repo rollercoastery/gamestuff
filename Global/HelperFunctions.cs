@@ -26,7 +26,7 @@ public class HelperFunctions : MonoBehaviour {
         //MakeSingleton(hf, gameObject);
     }
 
-    // Common count up timer
+    // Count up timer. Returns true once timer has completed, else returns false
     public bool Timer(ref float current, float end)
     {
         if (current < end)
