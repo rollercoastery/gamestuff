@@ -8,12 +8,14 @@ public class SpawnerBehavior : MonoBehaviour {
     int currentNumberOfEnemies;         // Current number of enemies that have been spawned by this spawner
 
     public SpawnType spawnType;         // Storing the current spawn type enum
-    public float spawnTimer;            // Static spawn type, time before 1 enemy is spawned
-    public float fromSpawnTimer;        // RandomRange spawn type, random range from this value
-    public float toSpawnTimer;          // RandomRange spawn type, random range to this value
-    public int batchOfEnemies;          // Beats spawn type, how many enemies to spawn one after the other before delayTimer kicks in
-    public float delayTimer;            // Beats spawn type, pause duration until spawn resumes
-    float randomRangeTimer;             // RandomRange spawn type, max random timer
+    public float spawnTimer;            // Static & Beats spawn type, time before 1 enemy is spawned
+    public float fromSpawnTimer_randr;  // RandomRange spawn type, random range from this value
+    public float toSpawnTimer_randr;    // RandomRange spawn type, random range to this value
+    public int batchOfEnemies_beats;    // Beats spawn type, how many enemies to spawn one after the other before delayTimer kicks in
+    public float delayTimer_beats;      // Beats spawn type, pause duration until spawn resumes
+    uint numberOfEnemiesSpawned_beats;  // Beats spawn type, track the number of enemies spawned per batch
+    float currentSecondTimer_beats;     // Beats spawn type, current secondary timer for delayTimer_beats
+    float randomRangeTimer_rand;        // RandomRange spawn type, max random timer
     float currentTimer;                 // The current timer for all spawn types
 
     public enum SpawnType
@@ -26,8 +28,9 @@ public class SpawnerBehavior : MonoBehaviour {
     void OnEnable ()
     {
         currentNumberOfEnemies = 0;
-        currentTimer = 0f;
-        randomRangeTimer = Random.Range(fromSpawnTimer, toSpawnTimer);
+        numberOfEnemiesSpawned_beats = 0;
+        currentTimer = currentSecondTimer_beats = 0f;
+        randomRangeTimer_rand = Random.Range(fromSpawnTimer_randr, toSpawnTimer_randr);
     }
 
     void Update()
@@ -41,28 +44,32 @@ public class SpawnerBehavior : MonoBehaviour {
         switch (spawnType)
         {
             case SpawnType.Static:
-                if (CheckEnemyCount() && 
-                    HelperFunctions.hf.Timer(ref currentTimer, spawnTimer))
-                {
-                    ObjectManager.om.GetEnemy(transform.position);
-                    ++currentNumberOfEnemies;
-                    return;
-                }
+                if (IsSpawnEnemySuccess(spawnTimer))
+                    SpawnEnemy();
                 break;
             case SpawnType.RandomRange:
-                if (CheckEnemyCount() &&
-                    HelperFunctions.hf.Timer(ref currentTimer, randomRangeTimer))
+                if (IsSpawnEnemySuccess(randomRangeTimer_rand))
                 {
-                    randomRangeTimer = Random.Range(fromSpawnTimer, toSpawnTimer);
-                    ObjectManager.om.GetEnemy(transform.position);
-                    ++currentNumberOfEnemies;
+                    randomRangeTimer_rand = Random.Range(fromSpawnTimer_randr, toSpawnTimer_randr);
+                    SpawnEnemy();
                 }
                 break;
             case SpawnType.Beats:
-                if (CheckEnemyCount() && 
-                    HelperFunctions.hf.Timer(ref currentTimer, 1f))
+
+                if (IsSpawnEnemySuccess(spawnTimer))
                 {
-                     
+                    if (numberOfEnemiesSpawned_beats < batchOfEnemies_beats)
+                    {
+                        SpawnEnemy();
+                        ++numberOfEnemiesSpawned_beats;
+                        print("spawned");
+                    }
+                    else if (numberOfEnemiesSpawned_beats >= batchOfEnemies_beats)
+                    {
+                        numberOfEnemiesSpawned_beats = 0;
+                        currentTimer = currentSecondTimer_beats = 0f;
+                        print("reset");
+                    }
                 }
                 break;
         }
@@ -74,7 +81,25 @@ public class SpawnerBehavior : MonoBehaviour {
 
     }
 
+    void SpawnEnemy()
+    {
+        ObjectManager.om.GetEnemy(transform.position);
+        ++currentNumberOfEnemies;
+    }
+
+    // 
+    bool IsSpawnEnemySuccess(float timer)
+    {
+        if (CheckEnemyCount() &&
+            HelperFunctions.hf.Timer(ref currentTimer, timer))
+        {
+            return true;
+        }
+        return false;
+    }
+
     // Check the current number of enemies that has been spawned by this spawner
+    // return true when 
     bool CheckEnemyCount()
     {
         return (numberOfEnemiesToSpawn < 0 || currentNumberOfEnemies < numberOfEnemiesToSpawn) ? true : false;

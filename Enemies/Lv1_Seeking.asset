@@ -12,7 +12,6 @@ MonoBehaviour:
   m_Name: Lv1_Seeking
   m_EditorClassIdentifier: 
   health: 5
-  spawnedTimer: 1
-  moveSpeed: 4
-  turnSpeed: 4
   movementType: 1
+  moveSpeed: 0.1
+  turnSpeed: 0.2

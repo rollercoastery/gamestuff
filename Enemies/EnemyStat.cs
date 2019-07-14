@@ -10,10 +10,8 @@ public class EnemyStat : ScriptableObject {
     public uint health;
 
     [Header("Movement")]
-    [Tooltip("Set duration after spawning to count down from")]
-    public float spawnedTimer;
     [Tooltip("Movement type that will eventually be set after first spawn period")]
-    public MovementType movementType;
+    public MovementType movementType;       // Movement type that will eventually be set after spawning period
     public float moveSpeed;
     public float turnSpeed;
 

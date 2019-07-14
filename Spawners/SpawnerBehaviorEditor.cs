@@ -48,12 +48,29 @@ public class SpawnerBehaviorEditor : Editor {
         {
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("From Spawn Timer", GUILayout.Width(205));
-            sb.fromSpawnTimer = EditorGUILayout.FloatField(sb.fromSpawnTimer);
+            sb.fromSpawnTimer_randr = EditorGUILayout.FloatField(sb.fromSpawnTimer_randr);
             GUILayout.EndHorizontal();
 
             GUILayout.BeginHorizontal();
             EditorGUILayout.LabelField("To Spawn Timer", GUILayout.Width(205));
-            sb.toSpawnTimer = EditorGUILayout.FloatField(sb.toSpawnTimer);
+            sb.toSpawnTimer_randr = EditorGUILayout.FloatField(sb.toSpawnTimer_randr);
+            GUILayout.EndHorizontal();
+        }
+        else if (sb.spawnType == SpawnerBehavior.SpawnType.Beats)
+        {
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Spawn Timer", GUILayout.Width(205));
+            sb.spawnTimer = EditorGUILayout.FloatField(sb.spawnTimer);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Number of Enemies Per Wave", GUILayout.Width(205));
+            sb.batchOfEnemies_beats = EditorGUILayout.IntField(sb.batchOfEnemies_beats);
+            GUILayout.EndHorizontal();
+
+            GUILayout.BeginHorizontal();
+            EditorGUILayout.LabelField("Spawn Timer Per Wave", GUILayout.Width(205));
+            sb.delayTimer_beats = EditorGUILayout.Slider(sb.delayTimer_beats, 0.1f, 5f);
             GUILayout.EndHorizontal();
         }
     #endregion

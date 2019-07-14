@@ -8,32 +8,13 @@ public class BaseEnemy : MonoBehaviour {
 
     public EnemyStat es;
 
-    [Header("Basic")]
-	public uint health;
-
-    [Header("Movement")]
-    public float spawnedTimer;          // Set duration after spawning to count down from
     float currentSpawnedTimer;          // The current timer of the period after spawning
-    public float moveSpeed;
-    public float turnSpeed;
-    public MovementType movementType;   // Movement type that will eventually be set after spawning period
-    MovementType currentMovementType;   // The movement type that will be set to the enemy
-
-    public enum MovementType
-    {
-        Straight,       // Moves in a straight line when just spawned
-        Seeking,        // Seeks target in a straight line
-        Random,         // Moves randomly
-        Distance,       // Keeps a small randomized range of distance from the target
-        Teleport        // Teleports towards the target in steps
-    }
-
+    EnemyStat.MovementType currentMovementType;   // The movement type that will be set to the enemy
+    
     float randRotationTimer;        // Current random rotation timer for the Random movement type
     float randRotationMaxTimer;     // Max random rotation timer for the Random movement type
     Quaternion randRotation;        // New random rotation
-
-    
-    
+        
     bool isCollided;    // For dying animation
 
     void OnEnable()
@@ -45,33 +26,33 @@ public class BaseEnemy : MonoBehaviour {
         randRotationTimer = 0f;
         randRotation = Random.rotation;
 
-        currentMovementType = MovementType.Straight;
+        currentMovementType = EnemyStat.MovementType.Straight;
         currentSpawnedTimer = 0f;
         isCollided = false;
+
+        GetComponent<CircleCollider2D>().enabled = false;
     }
     
     void Update()
     {
-        float p_turnSpeed = turnSpeed * Time.deltaTime * gd.gameSpeed;
+        float p_turnSpeed = es.turnSpeed * Time.deltaTime * gd.gameSpeed;
 
-        if (!HelperFunctions.hf.Timer(ref currentSpawnedTimer, spawnedTimer))
+        // TODO: Improve initial spawn state timer (this feature helps enemies go in a straight line first 
+        // before reverting to its set movement type) by not making it timer based so that there is 
+        // no need to test this feature with each new enemy creation
+        if (HelperFunctions.hf.Timer(ref currentSpawnedTimer, 1f))
         {
-            currentMovementType = MovementType.Straight;
-            GetComponent<CircleCollider2D>().enabled = false;
-        }
-        else
-        {
-            currentMovementType = movementType;
+            currentMovementType = es.movementType;
             GetComponent<CircleCollider2D>().enabled = true;
         }
 
         switch (currentMovementType)
         {
-            case MovementType.Straight:
+            case EnemyStat.MovementType.Straight:
                 MoveStraight();
                 break;
 
-            case MovementType.Seeking:
+            case EnemyStat.MovementType.Seeking:
                 WarpObject();
                 transform.rotation = Quaternion.Lerp(transform.rotation, 
                                                      Quaternion.LookRotation(Vector3.forward, ObjectManager.om.head.transform.position - transform.position),
@@ -79,7 +60,7 @@ public class BaseEnemy : MonoBehaviour {
                 MoveStraight();
                 break;
 
-            case MovementType.Random:
+            case EnemyStat.MovementType.Random:
                 WarpObject();
 
                 // Get a random timer
@@ -98,9 +79,9 @@ public class BaseEnemy : MonoBehaviour {
                 MoveStraight();
                 break;
 
-            case MovementType.Distance:
+            case EnemyStat.MovementType.Distance:
                 break;
-            case MovementType.Teleport:
+            case EnemyStat.MovementType.Teleport:
                 break;
             default:
                 break;
@@ -124,7 +105,7 @@ public class BaseEnemy : MonoBehaviour {
     private void MoveStraight()
     {
         //transform.position = Vector3.MoveTowards(transform.position, target.transform.position, moveSpeed * Time.deltaTime * gd.gameSpeed;);
-        transform.position += transform.up * Time.deltaTime * gd.gameSpeed * moveSpeed;
+        transform.position += transform.up * Time.deltaTime * gd.gameSpeed * es.moveSpeed;
     }
 
     // Warp object to opposite screen
